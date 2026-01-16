@@ -1,6 +1,6 @@
 // CONFIGURATIE: Pas hier je links aan!
 const REWARD_CONFIG = {
-    photoUrl: "rewards/escaperoom.jpg", // verborgen foto URL
+    //photoUrl: "rewards/escaperoom.jpg", // verborgen foto URL
     datePickerUrl: "https://datumprikker.nl/afspraak/maken", // datumprikker link
     switchTime: 30 // Seconden voordat de link verandert
 };
@@ -417,14 +417,14 @@ function initRewardSequence() {
     const photoUrl = REWARD_CONFIG.photoUrl;
     
     // Als het een Google Drive link is, converteer naar direct download
-    let finalPhotoUrl = photoUrl;
-    if (photoUrl.includes('drive.google.com')) {
-        // Extract file ID en maak direct download link
-        const fileIdMatch = photoUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
-        if (fileIdMatch) {
-            finalPhotoUrl = `https://drive.google.com/uc?export=view&id=${fileIdMatch[1]}`;
-        }
-    }
+    // let finalPhotoUrl = photoUrl;
+    // if (photoUrl.includes('drive.google.com')) {
+    //     // Extract file ID en maak direct download link
+    //     const fileIdMatch = photoUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
+    //     if (fileIdMatch) {
+    //         finalPhotoUrl = `https://drive.google.com/uc?export=view&id=${fileIdMatch[1]}`;
+    //     }
+    // }
     
     // Stap 1: Zet de foto link
     btn.href = finalPhotoUrl;
