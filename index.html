@@ -63,15 +63,14 @@
             </section>
 
             <section id="level-3" class="game-section hidden">
-                <h2>Level 3: Spectraalanalyse</h2>
-                <p>Welke hex-code hoort bij puur Rood?</p>
-                <div class="options-grid">
-                    <button class="option-btn" onclick="checkLevel(3, '#00FF00')">#00FF00</button>
-                    <button class="option-btn" onclick="checkLevel(3, '#FF0000')">#FF0000</button>
-                    <button class="option-btn" onclick="checkLevel(3, '#0000FF')">#0000FF</button>
-                    <button class="option-btn" onclick="checkLevel(3, '#FFFFFF')">#FFFFFF</button>
+                <h2>Level 3: Ontcijfering</h2>
+                <p>Ontcijfer het anagram:</p>
+                <div class="anagram-container">
+                    <div class="scrambled-text" id="scrambled-3">TID LIW EJ TEIN</div>
                 </div>
+                <input type="text" id="input-3" placeholder="Voer de ontcijferde zin in..." autocomplete="off" style="text-transform: uppercase;">
                 <p class="error-msg" id="error-3"></p>
+                <button class="btn" onclick="checkLevel(3)">Verifieer</button>
                 
                 <!-- WASTED Overlay -->
                 <div id="wasted-overlay-3" class="wasted-overlay" style="display: none;" onclick="closeRewardPopup()">

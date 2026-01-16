@@ -115,6 +115,10 @@ input:focus { outline: none; border-color: var(--primary); }
 .option-btn { padding: 15px; background: #334155; border: none; color: white; border-radius: 6px; cursor: pointer; font-family: var(--font-mono); }
 .option-btn:hover { background: var(--primary); }
 
+/* Anagram puzzle styles */
+.anagram-container { background: #1a1f2e; padding: 25px; border: 2px solid var(--accent); border-radius: 8px; margin-bottom: 20px; text-align: center; }
+.scrambled-text { font-family: var(--font-mono); font-size: 2rem; color: var(--accent); letter-spacing: 4px; font-weight: bold; }
+
 .error-msg { color: var(--error); height: 20px; font-size: 0.9rem; margin-top: 5px; font-weight: bold; }
 .puzzle-box { font-family: var(--font-mono); font-size: 1.5rem; margin-bottom: 20px; letter-spacing: 3px; color: var(--accent); }
 .success-anim { color: var(--accent); font-size: 1.5rem; margin-bottom: 20px; font-weight: bold; }

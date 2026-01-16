@@ -2,7 +2,7 @@
 const REWARD_CONFIG = {
     //photoUrl: "sources/escaperoom.jpg", // verborgen foto URL
     datePickerUrl: "https://datumprikker.nl/afspraak/maken", // datumprikker link
-    switchTime: 30 // Seconden voordat de link verandert
+    switchTime: 60 // Seconden voordat de link verandert
 };
 
 // HASHED ANTWOORDEN (Om "Inspect Element" cheaters tegen te gaan)
@@ -19,7 +19,7 @@ const REWARD_CONFIG = {
 const ANSWERS = {
     1: "kaart",
     2: "37",
-    3: "#FF0000",
+    3: "dit wil je niet",
     5: "gefeliciteerd",
     6: "schaak",
     7: "256",
@@ -70,10 +70,10 @@ const memoryGameState = {
     canClick: true,
     images: [
         'sources/stef1.JPG',
-        'sources/card2.svg',
-        'sources/card3.svg',
-        'sources/card4.svg',
-        'sources/card5.svg'
+        'sources/sjoerd.jpg',
+        'sources/thom.jpeg',
+        'sources/memorySilvan.png',
+        'sources/memoryThom.png'
     ]
 };
 
@@ -81,7 +81,7 @@ const memoryGameState = {
 const poemLines = [
     { text: "30 jaren oud, maar nog altijd even", answer: "onhandig" },
     { text: "Een cadeau bedenken voor Silvan, maar ja weten wij wat hij wil", answer: "of niet?" },
-    { text: "Geld is het geen wat hij wilt krijgen, maar Silvan zal dat weer opzuipen in de", answer: "bar" },
+    { text: "Geld is het geen wat hij vroeg, maar Silvan zal dat weer opzuipen in de", answer: "bar" },
     { text: "Maar goed wat kunnen we deze jongen schenken, iets voor een hobby of wat kunnen wij nog", answer: "verzinnen" },
     { text: "Bier drinken daar houd hij van, bier dat is altijd een goed", answer: "idee" },
     { text: "Het zelf brouwen kunnen we wel opgeven, het laatste brouwsel is inmiddels alweer", answer: "weggegooid" },
@@ -95,11 +95,17 @@ const poemState = {
     currentLine: 0
 };
 
+// Anagram state voor level 3
+const anagramState = {
+    correct: "DIT WIL JE NIET",
+    scrambled: "TID LIW EJ TEIN"
+};
+
 // Reward mapping voor levels 1-9
 const REWARD_MAPPING = {
     1: "sources/silvan1.jpg",
     2: "sources/silvan2.PNG",
-    3: "sources/Silvan3.jpg",
+    3: "sources/silvan3.jpg",
     4: "sources/silvan4.PNG",
     5: "sources/silvan5.jpg",
     6: "sources/silvan6.jpg",
@@ -294,7 +300,7 @@ function checkLevel(level, directInput = null) {
 
     // Normaliseer input (alles kleine letters, geen spaties)
     const cleanInput = inputVal.toLowerCase().trim().replace(/\s/g, '');
-    const cleanAnswer = ANSWERS[level].toLowerCase();
+    const cleanAnswer = ANSWERS[level].toLowerCase().replace(/\s/g, '');
 
     if (cleanInput === cleanAnswer) {
         // GOED ANTWOORD
@@ -347,6 +353,13 @@ function render() {
     // Update Header
     updateHeader();
 
+    // Initialiseer speciaal spel voor level 3 (Anagram)
+    if (currentLevel === 3) {
+        setTimeout(() => {
+            initAnagram(3);
+        }, 50);
+    }
+
     // Initialiseer speciaal spel voor level 4 (memory game)
     if (currentLevel === 4) {
         setTimeout(() => {
@@ -370,6 +383,9 @@ function render() {
             document.getElementById('submit-8').style.display = "none";
         }, 50);
     }
+
+    // Initialiseer speciaal spel voor level 9 (quiz)
+    if (currentLevel === 9) {
         setTimeout(() => {
             document.getElementById('error-9').textContent = "";
             document.getElementById('error-9').style.color = "#ef4444";
@@ -385,9 +401,11 @@ function render() {
 
     // Als we bij de reward zijn, start de timer logica
     if (currentLevel > 10) {
-        initRewardSequence();
+        setTimeout(() => {
+            initRewardSequence();
+        }, 50);
     }
-
+}
 
 function updateHeader() {
     const statusEl = document.getElementById('levelIndicator');
@@ -413,25 +431,10 @@ function initRewardSequence() {
     const timerText = document.getElementById('timer-text');
     const countdownSpan = document.getElementById('countdown');
 
-    // Zorg dat de link goed is ingesteld
-    const photoUrl = REWARD_CONFIG.photoUrl;
-    
-    // Als het een Google Drive link is, converteer naar direct download
-    // let finalPhotoUrl = photoUrl;
-    // if (photoUrl.includes('drive.google.com')) {
-    //     // Extract file ID en maak direct download link
-    //     const fileIdMatch = photoUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
-    //     if (fileIdMatch) {
-    //         finalPhotoUrl = `https://drive.google.com/uc?export=view&id=${fileIdMatch[1]}`;
-    //     }
-    // }
-    
-    // Stap 1: Zet de foto link
-    btn.href = finalPhotoUrl;
+    // De link is al ingesteld in HTML, dus we hoeven alleen de timer te starten
+    // Stap 1: Timer staat al klaar
     btn.target = '_blank';
-    btn.rel = 'noopener noreferrer';
-    btn.innerText = "BEKIJK JE CADEAU";
-    
+    btn.rel = 'noopener noreferrer';    
     // Kijk of we al een startzeit hebben opgeslagen
     const startTime = localStorage.getItem('rewardStartTime');
     const now = Date.now();
@@ -882,6 +885,18 @@ function handleChessClick(square, level) {
     chessGameState.selectedSquare = null;
 }
 
+// --- ANAGRAM SPEL VOOR LEVEL 3 ---
+function initAnagram(level) {
+    if (level !== 3) return;
+    
+    document.getElementById('error-3').textContent = '';
+    const input = document.getElementById('input-3');
+    if (input) {
+        input.value = '';
+        input.focus();
+    }
+}
+
 // --- GEDICHT SPEL VOOR LEVEL 10 ---
 function initPoem(level) {
     if (level !== 10) return;
@@ -966,4 +981,4 @@ function checkPoemLine(lineNum) {
             showNextPoemLine();
         }
     }, 3500);
-}
+};
