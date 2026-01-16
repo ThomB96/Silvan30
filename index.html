@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project: VERJAARDAG | Access Control</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div class="logo">Present_Silvan_LOCKED.V1.0</div>
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <div class="status" id="levelIndicator">Systeem Initialiseren...</div>
+            <button class="btn-reset" onclick="resetGame()" title="Reset het spel">🔄 RESET</button>
+        </header>
+
+        <main>
+            <section id="intro" class="game-section active">
+                <h1>BEVEILIGINGSALERT</h1>
+                <p>Welkom. Er is een versleuteld bestand gedetecteerd speciaal voor jou.</p>
+                <p>Om toegang te krijgen tot JOUW CADEAU, moet je enkele beveiligingslagen omzeilen.</p>
+                <button class="btn" id="start-btn" onclick="startGame()">Start Initialisatie</button>
+            </section>
+
+            <section id="level-1" class="game-section hidden">
+                <h2>Level 1: Authenticatie</h2>
+                <p>Ik heb steden, maar geen huizen. Ik heb bergen, maar geen bomen. Ik heb water, maar geen vis. Wat ben ik?</p>
+                <input type="text" id="input-1" placeholder="Voer wachtwoord in..." autocomplete="off">
+                <p class="error-msg" id="error-1"></p>
+                <button class="btn" onclick="checkLevel(1)">Verifieer</button>
+                
+                <!-- WASTED Overlay -->
+                <div id="wasted-overlay-1" class="wasted-overlay" style="display: none;" onclick="closeRewardPopup()">
+                    <div class="wasted-text">WASTED</div>
+                    <div class="wasted-info">
+                        <p>Je bent uitgeschakeld!</p>
+                        <button class="btn" onclick="retryLevel(1)" style="margin-top: 15px;">RETRY</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="level-2" class="game-section hidden">
+                <h2>Level 2: Patroonherkenning</h2>
+                <p>Wat is het volgende nummer in de reeks?</p>
+                <div class="puzzle-box">2, 5, 10, 17, 26, ?</div>
+                <input type="number" id="input-2" placeholder="Cijfer invoeren..." autocomplete="off">
+                <p class="error-msg" id="error-2"></p>
+                <button class="btn" onclick="checkLevel(2)">Verifieer</button>
+                
+                <!-- WASTED Overlay -->
+                <div id="wasted-overlay-2" class="wasted-overlay" style="display: none;" onclick="closeRewardPopup()">
+                    <div class="wasted-text">WASTED</div>
+                    <div class="wasted-info">
+                        <p>Je bent uitgeschakeld!</p>
+                        <button class="btn" onclick="retryLevel(2)" style="margin-top: 15px;">RETRY</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="level-3" class="game-section hidden">
+                <h2>Level 3: Spectraalanalyse</h2>
+                <p>Welke hex-code hoort bij puur Rood?</p>
+                <div class="options-grid">
+                    <button class="option-btn" onclick="checkLevel(3, '#00FF00')">#00FF00</button>
+                    <button class="option-btn" onclick="checkLevel(3, '#FF0000')">#FF0000</button>
+                    <button class="option-btn" onclick="checkLevel(3, '#0000FF')">#0000FF</button>
+                    <button class="option-btn" onclick="checkLevel(3, '#FFFFFF')">#FFFFFF</button>
+                </div>
+                <p class="error-msg" id="error-3"></p>
+                
+                <!-- WASTED Overlay -->
+                <div id="wasted-overlay-3" class="wasted-overlay" style="display: none;" onclick="closeRewardPopup()">
+                    <div class="wasted-text">WASTED</div>
+                    <div class="wasted-info">
+                        <p>Je bent uitgeschakeld!</p>
+                        <button class="btn" onclick="retryLevel(3)" style="margin-top: 15px;">RETRY</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="level-4" class="game-section hidden">
+                <h2>Level 4: Memory Game</h2>
+                <p>Vind alle matching paren om het level te voltooien!</p>
+                <div class="memory-stats">
+                    <span>Gevonden: <span id="matches-found">0</span>/5</span>
+                </div>
+                <div class="memory-grid" id="memory-grid-4"></div>
+                <p class="error-msg" id="error-4"></p>
+            </section>
+
+            <section id="level-5" class="game-section hidden">
+                <h2>Level 5: Mainframe Toegang</h2>
+                <p>De laatste sleutel is "GEFELICITEERD".</p>
+                <input type="text" id="input-5" placeholder="Typ de sleutel..." autocomplete="off">
+                <p class="error-msg" id="error-5"></p>
+                <button class="btn" onclick="checkLevel(5)">Toegang Verkrijgen</button>
+                
+                <!-- WASTED Overlay -->
+                <div id="wasted-overlay-5" class="wasted-overlay" style="display: none;" onclick="closeRewardPopup()">
+                    <div class="wasted-text">WASTED</div>
+                    <div class="wasted-info">
+                        <p>Je bent uitgeschakeld!</p>
+                        <button class="btn" onclick="retryLevel(5)" style="margin-top: 15px;">RETRY</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="level-6" class="game-section hidden">
+                <h2>Level 6: Logisch Redeneren</h2>
+                <p>Ik ben zwart, je kunt mij niet eten, maar je speelt mij wel. Wat ben ik?</p>
+                <input type="text" id="input-6" placeholder="Voer antwoord in..." autocomplete="off">
+                <p class="error-msg" id="error-6"></p>
+                <button class="btn" onclick="checkLevel(6)">Verifieer</button>
+                
+                <!-- WASTED Overlay -->
+                <div id="wasted-overlay-6" class="wasted-overlay" style="display: none;" onclick="closeRewardPopup()">
+                    <div class="wasted-text">WASTED</div>
+                    <div class="wasted-info">
+                        <p>Je bent uitgeschakeld!</p>
+                        <button class="btn" onclick="retryLevel(6)" style="margin-top: 15px;">RETRY</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="level-7" class="game-section hidden">
+                <h2>Level 7: Binaire Reeks</h2>
+                <p>Wat is het volgende getal in de reeks?</p>
+                <div class="puzzle-box">1, 2, 4, 8, 16, 32, 64, 128, ?</div>
+                <input type="number" id="input-7" placeholder="Cijfer invoeren..." autocomplete="off">
+                <p class="error-msg" id="error-7"></p>
+                <button class="btn" onclick="checkLevel(7)">Verifieer</button>
+                
+                <!-- WASTED Overlay -->
+                <div id="wasted-overlay-7" class="wasted-overlay" style="display: none;" onclick="closeRewardPopup()">
+                    <div class="wasted-text">WASTED</div>
+                    <div class="wasted-info">
+                        <p>Je bent uitgeschakeld!</p>
+                        <button class="btn" onclick="retryLevel(7)" style="margin-top: 15px;">RETRY</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="level-8" class="game-section hidden">
+                <h2>Level 8: Galgje</h2>
+                <p>Raad het woord letter voor letter!</p>
+                
+                <div class="hangman-container">
+                    <div class="hangman-drawing">
+                        <div class="gallows"></div>
+                        <div id="head-8" class="body-part head" style="display: none;"></div>
+                        <div id="body-8" class="body-part body" style="display: none;"></div>
+                        <div id="leftarm-8" class="body-part leftarm" style="display: none;"></div>
+                        <div id="rightarm-8" class="body-part rightarm" style="display: none;"></div>
+                        <div id="leftleg-8" class="body-part leftleg" style="display: none;"></div>
+                        <div id="rightleg-8" class="body-part rightleg" style="display: none;"></div>
+                    </div>
+                    
+                    <div class="word-display" id="word-display-8">_ _ _ _ _</div>
+                    <p class="wrong-letters">Foutieve letters: <span id="wrong-letters-8"></span></p>
+                </div>
+                
+                <div class="letters-grid" id="letters-grid-8">
+                    <button class="letter-btn" onclick="guessLetter(8, 'A')">A</button>
+                    <button class="letter-btn" onclick="guessLetter(8, 'B')">B</button>
+                    <button class="letter-btn" onclick="guessLetter(8, 'C')">C</button>
+                    <button class="letter-btn" onclick="guessLetter(8, 'D')">D</button>
+                    <button class="letter-btn" onclick="guessLetter(8, 'E')">E</button>
+                    <button class="letter-btn" onclick="guessLetter(8, 'F')">F</button>
+                    <button class="letter-btn" onclick="guessLetter(8, 'G')">G</button>
+                    <button class="letter-btn" onclick="guessLetter(8, 'H')">H</button>
+                    <button class="letter-btn" onclick="guessLetter(8, 'I')">I</button>
+                    <button class="letter-btn" onclick="guessLetter(8, 'J')">J</button>
+                    <button class="letter-btn" onclick="guessLetter(8, 'K')">K</button>
+                    <button class="letter-btn" onclick="guessLetter(8, 'L')">L</button>
+                    <button class="letter-btn" onclick="guessLetter(8, 'M')">M</button>
+                    <button class="letter-btn" onclick="guessLetter(8, 'N')">N</button>
+                    <button class="letter-btn" onclick="guessLetter(8, 'O')">O</button>
+                    <button class="letter-btn" onclick="guessLetter(8, 'P')">P</button>
+                    <button class="letter-btn" onclick="guessLetter(8, 'Q')">Q</button>
+                    <button class="letter-btn" onclick="guessLetter(8, 'R')">R</button>
+                    <button class="letter-btn" onclick="guessLetter(8, 'S')">S</button>
+                    <button class="letter-btn" onclick="guessLetter(8, 'T')">T</button>
+                    <button class="letter-btn" onclick="guessLetter(8, 'U')">U</button>
+                    <button class="letter-btn" onclick="guessLetter(8, 'V')">V</button>
+                    <button class="letter-btn" onclick="guessLetter(8, 'W')">W</button>
+                    <button class="letter-btn" onclick="guessLetter(8, 'X')">X</button>
+                    <button class="letter-btn" onclick="guessLetter(8, 'Y')">Y</button>
+                    <button class="letter-btn" onclick="guessLetter(8, 'Z')">Z</button>
+                </div>
+                
+                <p class="error-msg" id="error-8"></p>
+                <button class="btn" id="submit-8" onclick="checkLevel(8)" style="display: none; margin-top: 20px;">Volgende Level</button>
+                
+                <!-- WASTED Overlay -->
+                <div id="wasted-overlay-8" class="wasted-overlay" style="display: none;" onclick="closeRewardPopup()">
+                    <div class="wasted-text">WASTED</div>
+                    <div class="wasted-info">
+                        <p>Je bent uitgeschakeld!</p>
+                        <button class="btn" onclick="restartHangman(8)" style="margin-top: 15px;">RETRY</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="level-9" class="game-section hidden">
+                <h2>Level 9: Persoonlijke Quiz</h2>
+                <p>Beantwoord de vragen correct!</p>
+                
+                <div class="quiz-container">
+                    <div class="quiz-progress">
+                        Vraag <span id="quiz-current">1</span> van 5
+                    </div>
+                    <div class="quiz-single-question">
+                        <label id="quiz-label-9"></label>
+                        <input type="text" id="quiz-input-9" placeholder="Antwoord..." autocomplete="off">
+                    </div>
+                </div>
+                
+                <p class="error-msg" id="error-9"></p>
+                <button class="btn" onclick="checkQuizAnswer(9)">Volgende</button>
+                
+                <!-- WASTED Overlay -->
+                <div id="wasted-overlay-9" class="wasted-overlay" style="display: none;" onclick="closeRewardPopup()">
+                    <div class="wasted-text">WASTED</div>
+                    <div class="wasted-info">
+                        <p>Je bent uitgeschakeld!</p>
+                        <button class="btn" onclick="retryLevel(9)" style="margin-top: 15px;">RETRY</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="level-10" class="game-section hidden">
+                <h2>Level 10: Verjaardagsgedicht</h2>
+                <p style="margin-bottom: 1.5rem; font-style: italic;">Hierperdepiep hoera, Silvan is jarig en dat vieren wij. Om je verjaardag goed te vieren heb ik een gedicht voor je geschreven. Mijn rijmvaardigheid is niet geweldig maar vul een woord in wat rijmt en dan komt het goed.</p>
+                
+                <div class="poem-container">
+                    <div class="poem-line" id="poem-line-10">30 jaren oud, maar nog altijd even <input type="text" id="input-10-1" class="poem-input" placeholder="..." autocomplete="off"></div>
+                </div>
+                
+                <p class="error-msg" id="error-10"></p>
+                <button class="btn" onclick="checkPoemLine(1)">Volgende Regel</button>
+            </section>
+
+            <section id="reward" class="game-section hidden">
+                <div class="success-anim">🔓 TOEGANG VERLEEND</div>
+                <h2>Gefeliciteerd!</h2>
+                <p>De kluis is geopend. Hier is je cadeau.</p>
+                
+                <div class="card">
+                    <a id="mystery-link" href="#" target="_blank" class="mystery-btn">
+                        BEKIJK JE CADEAU (FOTO)
+                    </a>
+                    <p id="timer-text" class="small-text">Link vervalt in: <span id="countdown">60</span>s</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
