@@ -256,10 +256,25 @@ function resetGame() {
 
 // Check het antwoord
 function checkLevel(level, directInput = null) {
-    // Speciale behandeling voor level 3 (CAPTCHA)
     if (level === 3) {
-        // CAPTCHA wordt niet via checkLevel afgehandeld
-        return;
+        const inputEl = document.getElementById(`input-${level}`);
+        const userAnswer = inputEl.value.toLowerCase().trim().replace(/\s/g, '');
+        const correctAnswer = anagramState.correct.toLowerCase().replace(/\s/g, '');
+
+        if (userAnswer === correctAnswer) {
+            // GOED ANTWOORD
+            document.getElementById(`error-${level}`).textContent = "";
+            showRewardPopup(level); // Toon reward popup
+            nextLevel(); // Ga naar het volgende level
+        } else {
+            // FOUT ANTWOORD - Toon WASTED scherm
+            document.getElementById(`error-${level}`).textContent = "Fout antwoord, probeer het opnieuw."; // Foutmelding toegevoegd
+            setTimeout(() => {
+                const overlay = document.getElementById(`wasted-overlay-${level}`);
+                if (overlay) overlay.style.display = 'flex'; // Toon WASTED overlay
+            }, 500);
+        }
+        return; // Stop hier voor level 3
     }
 
     // Speciale behandeling voor level 4 (memory game)
@@ -504,7 +519,6 @@ function initHangman(level) {
     
     // Zet error bericht en submit knop terug naar standaard
     document.getElementById(`error-${level}`).textContent = "";
-    document.getElementById(`error-${level}`).style.color = "#ef4444";
     document.getElementById(`submit-${level}`).style.display = "none";
     
     updateHangmanDisplay(level);
