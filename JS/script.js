@@ -1,8 +1,8 @@
 // CONFIGURATIE: Pas hier je links aan!
 const REWARD_CONFIG = {
     //photoUrl: "sources/escaperoom.jpg", // verborgen foto URL
-    datePickerUrl: "https://datumprikker.nl/afspraak/maken", // datumprikker link
-    switchTime: 60 // Seconden voordat de link verandert
+    datePickerUrl: "https://datumprikker.nl/pqxu6qhsmehepxp3", // datumprikker link
+    switchTime: 30 // Seconden voordat de link verandert
 };
 
 // HASHED ANTWOORDEN (Om "Inspect Element" cheaters tegen te gaan)
@@ -256,6 +256,12 @@ function resetGame() {
 
 // Check het antwoord
 function checkLevel(level, directInput = null) {
+    // Speciale behandeling voor level 3 (CAPTCHA)
+    if (level === 3) {
+        // CAPTCHA wordt niet via checkLevel afgehandeld
+        return;
+    }
+
     // Speciale behandeling voor level 4 (memory game)
     if (level === 4) {
         // Memory game wordt niet via checkLevel afgehandeld

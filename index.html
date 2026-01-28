@@ -90,6 +90,15 @@
                 </div>
                 <div class="memory-grid" id="memory-grid-4"></div>
                 <p class="error-msg" id="error-4"></p>
+                
+                <!-- Reward Overlay -->
+                <div id="wasted-overlay-4" class="wasted-overlay" style="display: none;" onclick="closeRewardPopup()">
+                    <div class="wasted-text">WASTED</div>
+                    <div class="wasted-info">
+                        <p>Je bent uitgeschakeld!</p>
+                        <button class="btn" onclick="retryLevel(4)" style="margin-top: 15px;">RETRY</button>
+                    </div>
+                </div>
             </section>
 
             <section id="level-5" class="game-section hidden">
@@ -251,7 +260,7 @@
                 
                 <div class="card">
                     <a id="mystery-link" href="sources/escaperoom.JPG" target="_blank" class="mystery-btn">
-                        BEKIJK JE CADEAU (FOTO)
+                        BEKIJK JE CADEAU 
                     </a>
                     <p id="timer-text" class="small-text">Link vervalt in: <span id="countdown">60</span>s</p>
                 </div>
