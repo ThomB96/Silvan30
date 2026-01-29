@@ -95,6 +95,23 @@ const poemState = {
     currentLine: 0
 };
 
+// Level 5: Find the Lie - Long Press state
+const findLieState = {
+    currentStep: 0, // 0 = alarm, 1 = deur, 2 = hint (of succes na deur)
+    correctSequence: [2, 1, 3], // Stap 0: knop 2 (alarm), stap 1: knop 1 (deur), stap 2: knop 3 (hint)
+    pressTimers: {
+        1: null,
+        2: null,
+        3: null
+    },
+    pressStartTime: {
+        1: null,
+        2: null,
+        3: null
+    },
+    requiredTime: 3000 // 3 seconden in milliseconden
+};
+
 // Anagram state voor level 3
 const anagramState = {
     correct: "DIT WIL JE NIET",
@@ -264,8 +281,9 @@ function checkLevel(level, directInput = null) {
         if (userAnswer === correctAnswer) {
             // GOED ANTWOORD
             document.getElementById(`error-${level}`).textContent = "";
-            showRewardPopup(level); // Toon reward popup
-            nextLevel(); // Ga naar het volgende level
+            // Toon reward popup en WACHT op gebruiker om te sluiten (klik/tap/ESC)
+            showRewardPopup(level);
+            // closeRewardPopup() zal nextLevel() aanroepen wanneer de gebruiker de overlay sluit
         } else {
             // FOUT ANTWOORD - Toon WASTED scherm
             document.getElementById(`error-${level}`).textContent = "Fout antwoord, probeer het opnieuw."; // Foutmelding toegevoegd
@@ -275,6 +293,18 @@ function checkLevel(level, directInput = null) {
             }, 500);
         }
         return; // Stop hier voor level 3
+    }
+
+    // Speciale behandeling voor level 6 (Maze drag & drop)
+    if (level === 6) {
+        // Dit spel werkt via drag/drop handlers, niet via checkLevel
+        return;
+    }
+
+    // Speciale behandeling voor level 5 (Find the Lie - long press game)
+    if (level === 5) {
+        // Dit spel werkt via long press handlers, niet via checkLevel
+        return;
     }
 
     // Speciale behandeling voor level 4 (memory game)
@@ -374,10 +404,31 @@ function render() {
     // Update Header
     updateHeader();
 
+    // Initialiseer speciaal spel voor level 5 (Find the Lie)
+    if (currentLevel === 5) {
+        setTimeout(() => {
+            initFindLie(5);
+        }, 50);
+    }
+
+    // Initialiseer speciaal spel voor level 6 (Maze drag & drop)
+    if (currentLevel === 6) {
+        setTimeout(() => {
+            initMaze(6);
+        }, 50);
+    }
+
     // Initialiseer speciaal spel voor level 3 (Anagram)
     if (currentLevel === 3) {
         setTimeout(() => {
             initAnagram(3);
+        }, 50);
+    }
+
+    // Initialiseer speciaal spel voor level 5 (Find the Lie)
+    if (currentLevel === 5) {
+        setTimeout(() => {
+            initFindLie(5);
         }, 50);
     }
 
@@ -903,6 +954,179 @@ function handleChessClick(square, level) {
     }
     
     chessGameState.selectedSquare = null;
+}
+
+// --- LEVEL 5: FIND THE LIE LONG PRESS ---
+function initFindLie(level) {
+    if (level !== 5) return;
+    
+    // Reset stap
+    findLieState.currentStep = 0;
+    
+    document.getElementById('error-5').textContent = '';
+    
+    // Reset alle knoppen
+    for (let i = 1; i <= 3; i++) {
+        const btn = document.getElementById(`lie-btn-${i}`);
+        if (btn) {
+            btn.classList.remove('pressed');
+        }
+    }
+    
+    // Reset overlay naar WASTED state (verwijder reward elementen)
+    const overlay = document.getElementById(`wasted-overlay-5`);
+    if (overlay) {
+        const rewardImg = overlay.querySelector('.reward-image-display');
+        const rewardText = overlay.querySelector('.reward-text-display');
+        if (rewardImg) rewardImg.remove();
+        if (rewardText) rewardText.remove();
+        
+        // Toon WASTED tekst
+        const wastedText = overlay.querySelector('.wasted-text');
+        const wastedInfo = overlay.querySelector('.wasted-info');
+        if (wastedText) wastedText.style.display = 'block';
+        if (wastedInfo) wastedInfo.style.display = 'block';
+    }
+}
+
+function startLongPress(buttonId) {
+    // Zet timer voor long press detectie
+    findLieState.pressStartTime[buttonId] = Date.now();
+    
+    const btn = document.getElementById(`lie-btn-${buttonId}`);
+    btn.classList.add('pressed');
+    
+    findLieState.pressTimers[buttonId] = setTimeout(() => {
+        // Check of dit de juiste knop is voor huidige stap
+        const correctButton = findLieState.correctSequence[findLieState.currentStep];
+        
+        if (buttonId === correctButton) {
+            if (findLieState.currentStep === 0) {
+                // Stap 0 klaar: alarm uitgeschakeld, ga naar stap 1 (deur)
+                findLieState.currentStep = 1;
+                document.getElementById('error-5').textContent = "Alarm uitgeschakeld! Open nu de deur.";
+                document.getElementById('error-5').style.color = "#10b981";
+                btn.classList.remove('pressed');
+            } else if (findLieState.currentStep === 1) {
+                // Stap 1 klaar: deur geopend, succes!
+                completeLevel5Success();
+            }
+        }
+    }, findLieState.requiredTime);
+}
+
+function endLongPress(buttonId) {
+    const btn = document.getElementById(`lie-btn-${buttonId}`);
+    btn.classList.remove('pressed');
+    
+    // Annuleer timer
+    if (findLieState.pressTimers[buttonId]) {
+        clearTimeout(findLieState.pressTimers[buttonId]);
+        findLieState.pressTimers[buttonId] = null;
+    }
+    
+    // Check hoelang er ingedrukt is geweest
+    const pressTime = Date.now() - findLieState.pressStartTime[buttonId];
+    
+    // Als korte klik (< 3 seconden) = WASTED of hint
+    if (pressTime < findLieState.requiredTime) {
+        // Knop 3 is hint
+        if (buttonId === 3) {
+            showHintPopup();
+        } else {
+            // Andere knoppen = WASTED
+            setTimeout(() => {
+                document.getElementById(`wasted-overlay-5`).style.display = "flex";
+            }, 100);
+        }
+    }
+}
+
+function showHintPopup() {
+    // Toon hint als eenvoudige alert of custom popup
+    alert("Misschien wat langer klikken?");
+}
+
+function completeLevel5Success() {
+    // Activeer succes flow (afbeelding + tekst) via bestaande flow
+    document.getElementById('error-5').textContent = "";
+    showRewardPopup(5);
+}
+
+// --- LEVEL 6: EMOJI MATCHING GAME ---
+const emojiMatchState = {
+    draggedElement: null,
+    matchedPairs: new Set(), // Verzameling van juiste pairs
+    totalPairs: 3 // Moet 3 zijn om te winnen
+};
+
+function initMaze(level) {
+    if (level !== 6) return;
+    
+    document.getElementById('error-6').textContent = '';
+    
+    // Reset matched pairs
+    emojiMatchState.matchedPairs.clear();
+    
+    // Reset all drop targets
+    const dropTargets = document.querySelectorAll('.emoji-target .emoji-item');
+    dropTargets.forEach(target => {
+        target.classList.remove('matched');
+    });
+}
+
+function dragStartEmoji(event) {
+    emojiMatchState.draggedElement = event.target;
+    event.target.classList.add('dragging');
+    event.dataTransfer.effectAllowed = 'copy';
+    event.dataTransfer.setData('emoji', event.target.getAttribute('data-emoji'));
+    event.dataTransfer.setData('pair', event.target.getAttribute('data-pair'));
+}
+
+function dragOverEmoji(event) {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'copy';
+    event.target.closest('.emoji-item').classList.add('drag-over');
+}
+
+function dragLeaveEmoji(event) {
+    event.target.closest('.emoji-item').classList.remove('drag-over');
+}
+
+function dropEmoji(event) {
+    event.preventDefault();
+    
+    const dropTarget = event.target.closest('.emoji-item');
+    const draggedPair = event.dataTransfer.getData('pair');
+    const targetPair = dropTarget.getAttribute('data-pair');
+    
+    dropTarget.classList.remove('drag-over');
+    
+    // Check of de match juist is
+    if (draggedPair === targetPair) {
+        // Juiste match!
+        dropTarget.classList.add('matched');
+        emojiMatchState.matchedPairs.add(targetPair);
+        
+        // Check of alle 3 matches juist zijn
+        if (emojiMatchState.matchedPairs.size === emojiMatchState.totalPairs) {
+            completeEmojiMatch();
+        }
+    } else {
+        // Fout match!
+        setTimeout(() => {
+            document.getElementById(`wasted-overlay-6`).style.display = "flex";
+        }, 100);
+    }
+    
+    if (emojiMatchState.draggedElement) {
+        emojiMatchState.draggedElement.classList.remove('dragging');
+    }
+}
+
+function completeEmojiMatch() {
+    document.getElementById('error-6').textContent = '';
+    showRewardPopup(6);
 }
 
 // --- ANAGRAM SPEL VOOR LEVEL 3 ---

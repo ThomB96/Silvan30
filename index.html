@@ -103,10 +103,19 @@
 
             <section id="level-5" class="game-section hidden">
                 <h2>Level 5: Mainframe Toegang</h2>
-                <p>De laatste sleutel is "GEFELICITEERD".</p>
-                <input type="text" id="input-5" placeholder="Typ de sleutel..." autocomplete="off">
+                <p><strong>Slechts één link werkt, de andere twee zijn leugens.</strong></p>
+                <div class="find-lie-container">
+                    <div class="find-lie-button" id="lie-btn-1" onmousedown="startLongPress(1)" onmouseup="endLongPress(1)" ontouchstart="startLongPress(1)" ontouchend="endLongPress(1)" ontouchcancel="endLongPress(1)">
+                        Klik hier om de deur te openen
+                    </div>
+                    <div class="find-lie-button" id="lie-btn-2" onmousedown="startLongPress(2)" onmouseup="endLongPress(2)" ontouchstart="startLongPress(2)" ontouchend="endLongPress(2)" ontouchcancel="endLongPress(2)">
+                        Klik hier om het alarm uit te schakelen
+                    </div>
+                    <div class="find-lie-button" id="lie-btn-3" onmousedown="startLongPress(3)" onmouseup="endLongPress(3)" ontouchstart="startLongPress(3)" ontouchend="endLongPress(3)" ontouchcancel="endLongPress(3)">
+                        Klik hier voor een hint
+                    </div>
+                </div>
                 <p class="error-msg" id="error-5"></p>
-                <button class="btn" onclick="checkLevel(5)">Toegang Verkrijgen</button>
                 
                 <!-- WASTED Overlay -->
                 <div id="wasted-overlay-5" class="wasted-overlay" style="display: none;" onclick="closeRewardPopup()">
@@ -119,11 +128,26 @@
             </section>
 
             <section id="level-6" class="game-section hidden">
-                <h2>Level 6: Logisch Redeneren</h2>
-                <p>Ik ben zwart, je kunt mij niet eten, maar je speelt mij wel. Wat ben ik?</p>
-                <input type="text" id="input-6" placeholder="Voer antwoord in..." autocomplete="off">
+                <h2>Level 6: Politie Opdracht</h2>
+                <p>Sleep de bovenste emojis naar de onderste emojis. Combineer elk item met zijn match.</p>
+                
+                <div class="emoji-match-container">
+                    <!-- Bovenste rij: Draggable items -->
+                    <div class="emoji-row emoji-source">
+                        <div class="emoji-item draggable" draggable="true" ondragstart="dragStartEmoji(event)" data-emoji="👮" data-pair="donut">👮</div>
+                        <div class="emoji-item draggable" draggable="true" ondragstart="dragStartEmoji(event)" data-emoji="🦹‍♂️" data-pair="police-car">🦹‍♂️</div>
+                        <div class="emoji-item draggable" draggable="true" ondragstart="dragStartEmoji(event)" data-emoji="👨🏿" data-pair="gun">👨🏿</div>
+                    </div>
+                    
+                    <!-- Onderste rij: Drop zones -->
+                    <div class="emoji-row emoji-target">
+                        <div class="emoji-item drop-target" ondragover="dragOverEmoji(event)" ondrop="dropEmoji(event)" ondragleave="dragLeaveEmoji(event)" data-pair="donut">🍩</div>
+                        <div class="emoji-item drop-target" ondragover="dragOverEmoji(event)" ondrop="dropEmoji(event)" ondragleave="dragLeaveEmoji(event)" data-pair="gun">🔫</div>
+                        <div class="emoji-item drop-target" ondragover="dragOverEmoji(event)" ondrop="dropEmoji(event)" ondragleave="dragLeaveEmoji(event)" data-pair="police-car">🚔</div>
+                    </div>
+                </div>
+                
                 <p class="error-msg" id="error-6"></p>
-                <button class="btn" onclick="checkLevel(6)">Verifieer</button>
                 
                 <!-- WASTED Overlay -->
                 <div id="wasted-overlay-6" class="wasted-overlay" style="display: none;" onclick="closeRewardPopup()">
