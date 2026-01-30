@@ -1,8 +1,8 @@
 // CONFIGURATIE: Pas hier je links aan!
 const REWARD_CONFIG = {
-    //photoUrl: "sources/escaperoom.jpg", // verborgen foto URL
+    photoUrl: "sources/escaperoom.JPG", // standaards foto URL (zorg dat dit bestand bestaat)
     datePickerUrl: "https://datumprikker.nl/pqxu6qhsmehepxp3", // datumprikker link
-    switchTime: 30 // Seconden voordat de link verandert
+    switchTime: 15 // Seconden voordat de link verandert
 };
 
 // HASHED ANTWOORDEN (Om "Inspect Element" cheaters tegen te gaan)
@@ -44,9 +44,27 @@ const QUIZ_QUESTIONS = {
     5: "Wie is de beste agent in de kamer?"
 };
 
+// Hints voor level 9 - worden alleen getoond als de speler het eerder fout heeft beantwoord
+const QUIZ_HINTS = {
+    1: "Wist je dat hij een huis heeft gekocht?",
+    2: "Deze persoon heeft echt altijd dorst",
+    3: "Ze noemen hem ook wel 'Anus'",
+    4: "Dit is niet een persoon, dit is iedereen",
+    5: "Als je dit fout hebt, moet je thuis even in gesprek"
+};
+
 // Quiz state
 const quizState = {
     currentQuestion: 1
+};
+
+// Track of een vraag eerder fout is beantwoord (zodat de hint mag verschijnen)
+quizState.wrongAttempts = {
+    1: false,
+    2: false,
+    3: false,
+    4: false,
+    5: false
 };
 
 let currentLevel = 0; // 0 = Intro
@@ -503,10 +521,10 @@ function initRewardSequence() {
     const timerText = document.getElementById('timer-text');
     const countdownSpan = document.getElementById('countdown');
 
-    // De link is al ingesteld in HTML, dus we hoeven alleen de timer te starten
-    // Stap 1: Timer staat al klaar
+    // Zorg dat de link eerst naar de foto wijst (fall back op bestaande href in HTML)
+    btn.href = REWARD_CONFIG.photoUrl || btn.href;
     btn.target = '_blank';
-    btn.rel = 'noopener noreferrer';    
+    btn.rel = 'noopener noreferrer';
     // Kijk of we al een startzeit hebben opgeslagen
     const startTime = localStorage.getItem('rewardStartTime');
     const now = Date.now();
@@ -817,6 +835,8 @@ function showNextQuizQuestion() {
         const label = document.getElementById('quiz-label-9');
         label.textContent = "🎉 Alle vragen beantwoord! Quiz voltooid!";
         document.getElementById('quiz-input-9').style.display = "none";
+        const hintBtn = document.getElementById('quiz-hint-btn');
+        if (hintBtn) hintBtn.style.display = 'none';
         
         // Update button
         const btn = document.querySelector('button[onclick*="checkQuizAnswer"]');
@@ -837,6 +857,11 @@ function showNextQuizQuestion() {
     
     document.getElementById('quiz-current').textContent = currentQ;
     document.getElementById('error-9').textContent = "";
+    // Toon hint-knop alleen als deze vraag eerder fout beantwoord is
+    const hintBtn = document.getElementById('quiz-hint-btn');
+    if (hintBtn) {
+        hintBtn.style.display = quizState.wrongAttempts[currentQ] ? 'inline-block' : 'none';
+    }
 }
 
 function checkQuizAnswer(level) {
@@ -857,104 +882,31 @@ function checkQuizAnswer(level) {
             showNextQuizQuestion();
         }
     } else {
-        // Fout antwoord!
+        // Fout antwoord! registreer dat deze vraag fout is gemaakt
+        quizState.wrongAttempts[currentQ] = true;
+        // Maak hint-knop zichtbaar voor deze vraag
+        const hintBtn = document.getElementById('quiz-hint-btn');
+        if (hintBtn) hintBtn.style.display = 'inline-block';
         setTimeout(() => {
             document.getElementById(`wasted-overlay-${level}`).style.display = "flex";
         }, 500);
     }
 }
 
-// --- SCHAAKSPEL VOOR LEVEL 9 (NIET MEER GEBRUIKT) ---
-const chessGameState = {
-    selectedSquare: null,
-    moveMade: null
-};
+// Toon hint voor huidige quizvraag alleen als deze vraag eerder fout is beantwoord
+function showQuizHint() {
+    const currentQ = quizState.currentQuestion;
+    const errorEl = document.getElementById('error-9');
 
-// Wit stukken: ♔ ♕ ♖ ♗ ♘ ♙
-// Zwart stukken: ♚ ♛ ♜ ♝ ♞ ♟
-const whitePieces = ['♔', '♕', '♖', '♗', '♘', '♙'];
-const blackPieces = ['♚', '♛', '♜', '♝', '♞', '♟'];
-
-function initChess(level) {
-    if (level !== 9) return;
-    
-    chessGameState.selectedSquare = null;
-    chessGameState.moveMade = null;
-    
-    const board = document.getElementById(`chessboard-${level}`);
-    if (!board) return;
-    
-    // Event listeners toevoegen aan alle velden
-    board.querySelectorAll('.chess-square').forEach(square => {
-        square.addEventListener('click', () => handleChessClick(square, level));
-        square.classList.remove('selected', 'highlight');
-    });
-}
-
-function handleChessClick(square, level) {
-    const pos = square.dataset.pos;
-    const piece = square.textContent.trim();
-    const isWhitePiece = whitePieces.includes(piece);
-    
-    // Als geen stuk is geselecteerd
-    if (!chessGameState.selectedSquare) {
-        // Alleen witte stukken kunnen selecteren
-        if (isWhitePiece) {
-            chessGameState.selectedSquare = pos;
-            square.classList.add('selected');
-        }
-        return;
-    }
-    
-    // Als dezelfde square wordt geklikt, deselect
-    if (chessGameState.selectedSquare === pos) {
-        square.classList.remove('selected');
-        chessGameState.selectedSquare = null;
-        return;
-    }
-    
-    // Zet uitvoeren
-    const fromPos = chessGameState.selectedSquare;
-    const toPos = pos;
-    
-    // Reset alle highlights
-    document.getElementById(`chessboard-${level}`).querySelectorAll('.chess-square').forEach(s => {
-        s.classList.remove('selected', 'highlight');
-    });
-    
-    // Haal het stuk van het startpunt
-    const fromSquare = document.querySelector(`[data-pos="${fromPos}"]`);
-    const fromPiece = fromSquare.textContent.trim();
-    
-    if (!fromPiece) {
-        chessGameState.selectedSquare = null;
-        return;
-    }
-    
-    // Voer de zet uit
-    fromSquare.textContent = '';
-    square.textContent = fromPiece;
-    
-    // Sla de zet op
-    chessGameState.moveMade = fromPos + toPos;
-    
-    // Check of de juiste zet is gedaan
-    if (chessGameState.moveMade === "d5h8") {
-        document.getElementById(`error-${level}`).textContent = "✓ Correcte zet! Klik 'Volgende Level' om door te gaan.";
-        document.getElementById(`error-${level}`).style.color = "#10b981";
-        document.getElementById(`submit-${level}`).style.display = "block";
+    if (quizState.wrongAttempts[currentQ]) {
+        errorEl.style.color = "#2563eb"; // blauw voor hint
+        errorEl.textContent = "Hint: " + (QUIZ_HINTS[currentQ] || "Geen hint beschikbaar.");
     } else {
-        document.getElementById(`error-${level}`).textContent = "✗ Dit is niet de juiste zet. Probeer opnieuw!";
-        document.getElementById(`error-${level}`).style.color = "#ef4444";
-        
-        // Reset de zet
-        fromSquare.textContent = fromPiece;
-        square.textContent = '';
-        chessGameState.moveMade = null;
+        errorEl.style.color = "#f59e0b"; // oranje melding
+        errorEl.textContent = "Maak eerst een fout bij deze vraag om de hint te activeren.";
     }
-    
-    chessGameState.selectedSquare = null;
 }
+
 
 // --- LEVEL 5: FIND THE LIE LONG PRESS ---
 function initFindLie(level) {
